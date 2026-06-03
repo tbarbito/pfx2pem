@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
+
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 from typing import Optional
 
 import typer
