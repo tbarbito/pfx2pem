@@ -1,29 +1,29 @@
 # pfx2pem
 
-PowerShell script that converts PFX certificates to PEM format files, with support for multiple entity codes per CNPJ and automatic CA chain resolution via AIA URLs.
+Ferramenta PowerShell para converter certificados PFX para o formato PEM, com suporte a multiplos codigos de entidade por CNPJ e resolucao automatica da cadeia CA via URLs AIA.
 
-## Output files
+## Arquivos gerados
 
-For each configured entity code, the script generates:
+Para cada codigo de entidade configurado, a ferramenta gera:
 
-| File | Contents |
+| Arquivo | Conteudo |
 |---|---|
-| `{code}_key.pem` | Private key |
-| `{code}_cert.pem` | Client certificate |
-| `{code}_ca.pem` | CA chain (intermediates + root) |
-| `{code}_all.pem` | Client certificate + CA chain combined |
+| `{codigo}_key.pem` | Chave privada |
+| `{codigo}_cert.pem` | Certificado do cliente |
+| `{codigo}_ca.pem` | Cadeia CA (intermediarios + raiz) |
+| `{codigo}_all.pem` | Certificado do cliente + cadeia CA combinados |
 
-## Requirements
+## Requisitos
 
-- Windows with PowerShell 5.1+
-- [OpenSSL](https://slproweb.com/products/Win32OpenSSL.html) installed and available in PATH (or one of the default installation paths)
-- Internet access to download the CA chain on first use (via AIA URLs embedded in the certificate)
+- Windows com PowerShell 5.1+
+- [OpenSSL](https://slproweb.com/products/Win32OpenSSL.html) instalado e disponivel no PATH (ou em um dos caminhos padrao de instalacao). O Git para Windows ja inclui o OpenSSL.
+- Acesso a internet para baixar a cadeia CA no primeiro uso (via URLs AIA embutidas no certificado)
 
-## Setup
+## Configuracao
 
-1. Clone the repository
-2. Copy `config.example.json` to `config.json`
-3. Edit `config.json` with your values:
+1. Clone o repositorio
+2. Copie `config.example.json` para `config.json`
+3. Edite o `config.json` com seus valores:
 
 ```json
 {
@@ -32,50 +32,50 @@ For each configured entity code, the script generates:
   "certificates": [
     {
       "cnpj": "72677008000106",
-      "password": "your-pfx-password",
+      "password": "senha-do-pfx",
       "codes": ["000015", "000013"]
     }
   ]
 }
 ```
 
-> **Important:** `config.json` is listed in `.gitignore`. Never commit it — it contains passwords.
+> **Importante:** o `config.json` esta listado no `.gitignore`. Nunca faca commit dele -- ele contem senhas.
 
-## Usage
+## Uso
 
-Place your `.pfx` files in the `importDir` configured in `config.json`, then run:
+Coloque os arquivos `.pfx` na pasta `importDir` configurada no `config.json` e execute:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File pfx2pem.ps1
 ```
 
-## How CNPJ is resolved
+## Como o CNPJ e identificado
 
-The script identifies the certificate CNPJ in the following order:
+A ferramenta identifica o CNPJ do certificado na seguinte ordem:
 
-1. **Filename**: if the PFX filename is a 14-digit number (e.g. `72677008000106.pfx`)
-2. **Certificate bytes**: extracts the CNPJ embedded in the certificate's DER content (standard for ICP-Brasil certificates)
+1. **Nome do arquivo**: se o nome do PFX for um numero de 14 digitos (ex: `72677008000106.pfx`)
+2. **Conteudo do certificado**: extrai o CNPJ embutido no conteudo DER do certificado (padrao nos certificados ICP-Brasil)
 
-If the CNPJ is not found in `config.json`, the CNPJ itself is used as the output file prefix.
+Se o CNPJ nao for encontrado no `config.json`, o proprio CNPJ e usado como prefixo dos arquivos de saida.
 
-## Multiple codes per CNPJ
+## Multiplos codigos por CNPJ
 
-One CNPJ can be mapped to multiple entity codes. The certificate is processed once and the output files are written for each code:
+Um mesmo CNPJ pode ser mapeado para varios codigos de entidade. O certificado e processado uma unica vez e os arquivos de saida sao gravados para cada codigo:
 
 ```json
 {
   "cnpj": "72677008000106",
-  "password": "your-password",
+  "password": "sua-senha",
   "codes": ["000015", "000013", "000007"]
 }
 ```
 
-This generates `000015_key.pem`, `000013_key.pem`, `000007_key.pem`, etc. — all with identical content.
+Isso gera `000015_key.pem`, `000013_key.pem`, `000007_key.pem`, etc. -- todos com conteudo identico.
 
-## CA chain
+## Cadeia CA
 
-The CA chain is built automatically by following the AIA (Authority Information Access) URLs embedded in the certificate, walking up the chain until a self-signed root is reached. This works out of the box with ICP-Brasil certificates.
+A cadeia CA e construida automaticamente seguindo as URLs AIA (Authority Information Access) embutidas no certificado, subindo ate encontrar um certificado raiz autoassinado. Funciona nativamente com certificados ICP-Brasil.
 
-## License
+## Licenca
 
 MIT
