@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pfx2pem"
+version = "1.0.0"
+description = "Converte certificados PFX para o formato PEM com resolucao automatica da cadeia CA via AIA"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "tbarbito" }]
+dependencies = [
+    "typer>=0.15",
+    "rich>=13.7",
+    "cryptography>=42.0",
+]
+
+[project.scripts]
+pfx2pem = "pfx2pem.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pfx2pem"]

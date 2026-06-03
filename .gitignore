@@ -1,4 +1,15 @@
 config.json
 *.pfx
 *.pem
-export/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+.env
+
+# Test output
+test_output/
