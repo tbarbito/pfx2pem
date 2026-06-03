@@ -1,0 +1,16 @@
+{
+  "importDir": "C:\\path\\to\\import",
+  "exportDir": "C:\\path\\to\\export",
+  "certificates": [
+    {
+      "cnpj": "72677008000106",
+      "password": "your-pfx-password",
+      "codes": ["000015", "000013", "000007"]
+    },
+    {
+      "cnpj": "12345678000195",
+      "password": "another-password",
+      "codes": ["000020"]
+    }
+  ]
+}
