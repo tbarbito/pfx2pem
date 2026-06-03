@@ -21,3 +21,12 @@ pfx2pem = "pfx2pem.cli:app"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pfx2pem"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-mock>=3.12",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
