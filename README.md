@@ -26,6 +26,12 @@ Para cada codigo de entidade configurado:
 pip install git+https://github.com/tbarbito/pfx2pem.git
 ```
 
+Ou com `uv`:
+
+```bash
+uv tool install git+https://github.com/tbarbito/pfx2pem.git
+```
+
 ## Uso
 
 ### Converter um unico arquivo
@@ -43,18 +49,28 @@ pfx2pem convert certificado.pfx --password minha-senha --output ./pems --code 00
 ### Conversao em lote via config.json
 
 ```bash
-pfx2pem batch ./import-dir --config config.json
-```
-
-Se `import-dir` for omitido, usa o `importDir` do config:
-
-```bash
 pfx2pem batch --config config.json
 ```
 
+Sobrepondo o diretorio de importacao:
+
+```bash
+pfx2pem batch ./import-dir --config config.json
+```
+
+---
+
 ## Configuracao (batch)
 
-Copie `config.example.json` para `config.json` e preencha:
+Copie `config.example.json` para `config.json` e preencha com os valores do seu ambiente:
+
+```bash
+copy config.example.json config.json
+```
+
+> **Importante:** o `config.json` esta no `.gitignore`. Nunca faca commit -- ele contem senhas de certificados.
+
+### Referencia completa do config.json
 
 ```json
 {
@@ -65,25 +81,29 @@ Copie `config.example.json` para `config.json` e preencha:
       "cnpj": "72677008000106",
       "password": "senha-do-pfx",
       "codes": ["000015", "000013", "000007"]
+    },
+    {
+      "cnpj": "12345678000195",
+      "password": "outra-senha",
+      "codes": ["000020"]
     }
   ]
 }
 ```
 
-> **Importante:** o `config.json` esta no `.gitignore`. Nunca faca commit -- ele contem senhas.
+| Campo | Tipo | Padrao | Descricao |
+|---|---|---|---|
+| `importDir` | string | **obrigatorio** | Diretorio onde estao os arquivos `.pfx` a converter |
+| `exportDir` | string | **obrigatorio** | Diretorio onde os arquivos `.pem` serao gravados (criado automaticamente se nao existir) |
+| `certificates` | array | **obrigatorio** | Lista de certificados mapeados. Cada item define um CNPJ, sua senha e os codigos de entidade de saida |
+| `certificates[].cnpj` | string | **obrigatorio** | CNPJ do certificado (14 digitos, sem pontuacao) |
+| `certificates[].password` | string | **obrigatorio** | Senha do arquivo `.pfx` fornecida pela certificadora |
+| `certificates[].codes` | array | `[cnpj]` | Codigos de entidade usados como prefixo dos arquivos de saida. Se omitido, usa o proprio CNPJ |
 
-## Como o CNPJ e identificado
+### Multiplos codigos por CNPJ
 
-A ferramenta localiza o CNPJ na seguinte ordem:
-
-1. **Nome do arquivo**: se o PFX se chamar `72677008000106.pfx`
-2. **Conteudo do certificado**: extrai o CNPJ embutido nos bytes DER do certificado (padrao ICP-Brasil)
-
-Se o CNPJ nao estiver no `config.json`, ele mesmo e usado como prefixo dos arquivos de saida.
-
-## Multiplos codigos por CNPJ
-
-Um CNPJ pode mapear para varios codigos de entidade. O certificado e processado uma vez e os arquivos sao gravados para cada codigo:
+Um mesmo CNPJ pode mapear para varios codigos de entidade. O certificado e processado uma unica vez
+e os arquivos PEM sao gravados para cada codigo, todos com conteudo identico:
 
 ```json
 {
@@ -93,9 +113,29 @@ Um CNPJ pode mapear para varios codigos de entidade. O certificado e processado 
 }
 ```
 
+Isso gera `000015_key.pem`, `000013_key.pem`, `000007_key.pem`, etc.
+
+---
+
+## Como o CNPJ e identificado
+
+A ferramenta localiza o CNPJ do certificado na seguinte ordem:
+
+1. **Nome do arquivo**: se o PFX se chamar `72677008000106.pfx`
+2. **Conteudo do certificado**: extrai o CNPJ embutido nos bytes DER (padrao ICP-Brasil)
+
+Se o CNPJ nao estiver mapeado no `config.json`, ele mesmo e usado como prefixo dos arquivos de saida.
+
+---
+
 ## Cadeia CA
 
-A cadeia CA e construida automaticamente seguindo as URLs AIA (Authority Information Access) embutidas no certificado, subindo ate a raiz autoassinada. Funciona nativamente com certificados ICP-Brasil.
+A cadeia CA e construida automaticamente seguindo as URLs AIA (Authority Information Access)
+embutidas no certificado, subindo ate a raiz autoassinada. Funciona nativamente com certificados ICP-Brasil.
+
+A conexao com a internet e necessaria apenas no primeiro uso ou quando o certificado for renovado.
+
+---
 
 ## Licenca
 
