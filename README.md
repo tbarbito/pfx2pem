@@ -1,7 +1,7 @@
 # pfx2pem
 
 CLI Python para converter certificados PFX para o formato PEM, voltada para uso com o
-**TSS (Totvs Substitution Services)** do Protheus.
+**TSS (Totvs Sped Service / Transmissao de Documentos Eletronicos)** do Protheus.
 
 Nao requer OpenSSL instalado -- usa a biblioteca `cryptography` nativamente.
 
