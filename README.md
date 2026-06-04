@@ -17,7 +17,7 @@ O TSS armazena os certificados digitais das entidades fiscais na pasta `cert/` d
 de instalacao, no formato PEM. Quando um certificado e renovado junto a certificadora, ele chega
 no formato `.pfx` (PKCS#12) e precisa ser convertido antes de ser implantado no TSS.
 
-Esse fluxo e valido para qualquer produto TOTVS que utilize o TSS (Protheus, Datasul, RM, Fluig, etc.).
+Esse fluxo e valido para qualquer produto TOTVS que utilize o TSS (Protheus, Datasul, RM, Logix, Fluig, etc.).
 
 **Fluxo completo de renovacao:**
 
