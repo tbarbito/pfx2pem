@@ -38,7 +38,7 @@ Esse fluxo e valido para qualquer produto TOTVS que utilize o TSS (Protheus, Dat
 O campo `codes` do config.json corresponde ao `ID_ENT` da tabela `SPED001` no banco do Protheus.
 Use a query abaixo para localizar os codigos a partir dos CNPJs dos certificados que serao renovados.
 
-### Oracle
+### Oracle / PostgreSQL
 
 ```sql
 SELECT DISTINCT
@@ -60,22 +60,6 @@ ORDER BY CNPJ;
 SELECT DISTINCT
     CNPJ,
     ID_ENT + ' - ' + CNPJ AS ENT_CNPJ
-FROM SPED001
-WHERE CNPJ IN (
-    'CNPJ_01',
-    'CNPJ_02',
-    'CNPJ_03'
-)
-AND D_E_L_E_T_ = ' '
-ORDER BY CNPJ;
-```
-
-### PostgreSQL
-
-```sql
-SELECT DISTINCT
-    CNPJ,
-    ID_ENT || ' - ' || CNPJ AS ENT_CNPJ
 FROM SPED001
 WHERE CNPJ IN (
     'CNPJ_01',
