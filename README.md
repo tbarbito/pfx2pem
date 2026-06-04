@@ -5,6 +5,27 @@ CLI Python para converter certificados PFX para o formato PEM, voltada para uso 
 
 Nao requer OpenSSL instalado -- usa a biblioteca `cryptography` nativamente.
 
+## Ganho de produtividade
+
+O processo manual de renovacao exige entrar no Protheus pela tela de Nota Fiscal Eletronica e
+cadastrar cada certificado individualmente com sua senha -- uma operacao que leva entre **5 e 7 minutos
+por certificado**, dependendo do usuario e do ambiente.
+
+Com o `pfx2pem`, o processo inteiro (conversao + copia para o TSS) leva cerca de **30 segundos**,
+independente do volume de certificados.
+
+| Cenario | Processo manual | Com pfx2pem | Reducao |
+|---|---|---|---|
+| 1 certificado | 5 - 7 min | ~30 seg | **~85%** |
+| 5 certificados | 25 - 35 min | ~1 min | **~95%** |
+| 10 certificados | 50 - 70 min | ~2 min | **~97%** |
+
+O ganho e ainda maior quando um mesmo CNPJ esta associado a multiplos codigos de entidade, pois no
+processo manual cada codigo precisa ser cadastrado individualmente. Com o `pfx2pem`, o certificado e
+processado uma unica vez e os arquivos sao gravados para todos os codigos automaticamente.
+
+---
+
 > **Aviso:** este projeto nao e uma ferramenta oficial nem homologada pela TOTVS S.A.
 > Foi idealizado de forma pessoal como um facilitador para o processo de renovacao de certificados
 > digitais no TSS, compativel com todos os produtos TOTVS que o utilizam. Use por sua conta e risco.
