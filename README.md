@@ -1,8 +1,92 @@
 # pfx2pem
 
-CLI Python para converter certificados PFX para o formato PEM, com suporte a multiplos codigos de entidade por CNPJ e resolucao automatica da cadeia CA via URLs AIA.
+CLI Python para converter certificados PFX para o formato PEM, voltada para uso com o
+**TSS (Totvs Substitution Services)** do Protheus.
 
 Nao requer OpenSSL instalado -- usa a biblioteca `cryptography` nativamente.
+
+> **Aviso:** este projeto nao e uma ferramenta oficial nem homologada pela TOTVS S.A.
+> Foi idealizado de forma pessoal como um facilitador para o processo de renovacao de certificados
+> digitais no TSS. Use por sua conta e risco.
+
+---
+
+## Contexto de uso
+
+O TSS armazena os certificados digitais das entidades fiscais na pasta `cert/` do seu diretorio
+de instalacao, no formato PEM. Quando um certificado e renovado junto a certificadora, ele chega
+no formato `.pfx` (PKCS#12) e precisa ser convertido antes de ser implantado no TSS.
+
+**Fluxo completo de renovacao:**
+
+```
+1. Receber o .pfx da certificadora
+2. Consultar o codigo da entidade no banco (tabela SPED001 -- ver abaixo)
+3. Preencher o config.json com CNPJ, senha e codigo(s) da entidade
+4. Executar: pfx2pem batch --config config.json
+5. Parar o servico do TSS
+6. Copiar os .pem gerados para a pasta cert/ do TSS
+7. Subir o servico do TSS
+```
+
+---
+
+## Obtendo o codigo da entidade (tabela SPED001)
+
+O campo `codes` do config.json corresponde ao `ID_ENT` da tabela `SPED001` no banco do Protheus.
+Use a query abaixo para localizar os codigos a partir dos CNPJs dos certificados que serao renovados.
+
+### Oracle
+
+```sql
+SELECT DISTINCT
+    cnpj,
+    id_ent || ' - ' || cnpj AS ent_cnpj
+FROM sped001
+WHERE cnpj IN (
+    'CNPJ_01',
+    'CNPJ_02',
+    'CNPJ_03'
+)
+AND d_e_l_e_t_ = ' '
+ORDER BY cnpj;
+```
+
+### SQL Server
+
+```sql
+SELECT DISTINCT
+    cnpj,
+    id_ent + ' - ' + cnpj AS ent_cnpj
+FROM sped001
+WHERE cnpj IN (
+    'CNPJ_01',
+    'CNPJ_02',
+    'CNPJ_03'
+)
+AND d_e_l_e_t_ = ' '
+ORDER BY cnpj;
+```
+
+### PostgreSQL
+
+```sql
+SELECT DISTINCT
+    cnpj,
+    id_ent || ' - ' || cnpj AS ent_cnpj
+FROM sped001
+WHERE cnpj IN (
+    'CNPJ_01',
+    'CNPJ_02',
+    'CNPJ_03'
+)
+AND d_e_l_e_t_ = ' '
+ORDER BY cnpj;
+```
+
+O resultado traz pares `ID_ENT - CNPJ`. Use o `ID_ENT` como valor do campo `codes` no `config.json`.
+
+---
 
 ## Arquivos gerados
 
@@ -14,6 +98,8 @@ Para cada codigo de entidade configurado:
 | `{codigo}_cert.pem` | Certificado do cliente |
 | `{codigo}_ca.pem` | Cadeia CA (intermediarios + raiz) |
 | `{codigo}_all.pem` | Certificado + cadeia CA combinados |
+
+---
 
 ## Requisitos
 
@@ -31,6 +117,8 @@ Ou com `uv`:
 ```bash
 uv tool install git+https://github.com/tbarbito/pfx2pem.git
 ```
+
+---
 
 ## Uso
 
@@ -75,7 +163,7 @@ copy config.example.json config.json
 ```json
 {
   "importDir": "C:\\certs\\import",
-  "exportDir": "C:\\certs\\export",
+  "exportDir": "C:\\tss\\cert",
   "certificates": [
     {
       "cnpj": "72677008000106",
@@ -94,16 +182,16 @@ copy config.example.json config.json
 | Campo | Tipo | Padrao | Descricao |
 |---|---|---|---|
 | `importDir` | string | **obrigatorio** | Diretorio onde estao os arquivos `.pfx` a converter |
-| `exportDir` | string | **obrigatorio** | Diretorio onde os arquivos `.pem` serao gravados (criado automaticamente se nao existir) |
-| `certificates` | array | **obrigatorio** | Lista de certificados mapeados. Cada item define um CNPJ, sua senha e os codigos de entidade de saida |
+| `exportDir` | string | **obrigatorio** | Diretorio de saida dos `.pem`. Para uso direto com o TSS, aponte para a pasta `cert/` da instalacao |
+| `certificates` | array | **obrigatorio** | Lista de certificados. Cada item define um CNPJ, sua senha e os codigos de entidade |
 | `certificates[].cnpj` | string | **obrigatorio** | CNPJ do certificado (14 digitos, sem pontuacao) |
 | `certificates[].password` | string | **obrigatorio** | Senha do arquivo `.pfx` fornecida pela certificadora |
-| `certificates[].codes` | array | `[cnpj]` | Codigos de entidade usados como prefixo dos arquivos de saida. Se omitido, usa o proprio CNPJ |
+| `certificates[].codes` | array | `[cnpj]` | Codigos de entidade (`ID_ENT` da tabela `SPED001`) usados como prefixo dos arquivos de saida. Se omitido, usa o proprio CNPJ |
 
 ### Multiplos codigos por CNPJ
 
-Um mesmo CNPJ pode mapear para varios codigos de entidade. O certificado e processado uma unica vez
-e os arquivos PEM sao gravados para cada codigo, todos com conteudo identico:
+Um mesmo CNPJ pode estar associado a varios codigos de entidade no Protheus. O certificado e
+processado uma unica vez e os arquivos PEM sao gravados para cada codigo, todos com conteudo identico:
 
 ```json
 {
