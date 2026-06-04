@@ -42,48 +42,48 @@ Use a query abaixo para localizar os codigos a partir dos CNPJs dos certificados
 
 ```sql
 SELECT DISTINCT
-    cnpj,
-    id_ent || ' - ' || cnpj AS ent_cnpj
-FROM sped001
-WHERE cnpj IN (
+    CNPJ,
+    ID_ENT || ' - ' || CNPJ AS ENT_CNPJ
+FROM SPED001
+WHERE CNPJ IN (
     'CNPJ_01',
     'CNPJ_02',
     'CNPJ_03'
 )
-AND d_e_l_e_t_ = ' '
-ORDER BY cnpj;
+AND D_E_L_E_T_ = ' '
+ORDER BY CNPJ;
 ```
 
 ### SQL Server
 
 ```sql
 SELECT DISTINCT
-    cnpj,
-    id_ent + ' - ' + cnpj AS ent_cnpj
-FROM sped001
-WHERE cnpj IN (
+    CNPJ,
+    ID_ENT + ' - ' + CNPJ AS ENT_CNPJ
+FROM SPED001
+WHERE CNPJ IN (
     'CNPJ_01',
     'CNPJ_02',
     'CNPJ_03'
 )
-AND d_e_l_e_t_ = ' '
-ORDER BY cnpj;
+AND D_E_L_E_T_ = ' '
+ORDER BY CNPJ;
 ```
 
 ### PostgreSQL
 
 ```sql
 SELECT DISTINCT
-    cnpj,
-    id_ent || ' - ' || cnpj AS ent_cnpj
-FROM sped001
-WHERE cnpj IN (
+    CNPJ,
+    ID_ENT || ' - ' || CNPJ AS ENT_CNPJ
+FROM SPED001
+WHERE CNPJ IN (
     'CNPJ_01',
     'CNPJ_02',
     'CNPJ_03'
 )
-AND d_e_l_e_t_ = ' '
-ORDER BY cnpj;
+AND D_E_L_E_T_ = ' '
+ORDER BY CNPJ;
 ```
 
 O resultado traz pares `ID_ENT - CNPJ`. Use o `ID_ENT` como valor do campo `codes` no `config.json`.
