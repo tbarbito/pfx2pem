@@ -1,13 +1,13 @@
 # pfx2pem
 
 CLI Python para converter certificados PFX para o formato PEM, voltada para uso com o
-**TSS (Totvs Sped Service / Transmissao de Documentos Eletronicos)** do Protheus.
+**TSS (Totvs Sped Service / Transmissao de Documentos Eletronicos)** -- compativel com todos os produtos TOTVS que utilizam o TSS.
 
 Nao requer OpenSSL instalado -- usa a biblioteca `cryptography` nativamente.
 
 > **Aviso:** este projeto nao e uma ferramenta oficial nem homologada pela TOTVS S.A.
 > Foi idealizado de forma pessoal como um facilitador para o processo de renovacao de certificados
-> digitais no TSS. Use por sua conta e risco.
+> digitais no TSS, compativel com todos os produtos TOTVS que o utilizam. Use por sua conta e risco.
 
 ---
 
@@ -16,6 +16,8 @@ Nao requer OpenSSL instalado -- usa a biblioteca `cryptography` nativamente.
 O TSS armazena os certificados digitais das entidades fiscais na pasta `cert/` do seu diretorio
 de instalacao, no formato PEM. Quando um certificado e renovado junto a certificadora, ele chega
 no formato `.pfx` (PKCS#12) e precisa ser convertido antes de ser implantado no TSS.
+
+Esse fluxo e valido para qualquer produto TOTVS que utilize o TSS (Protheus, Datasul, RM, Fluig, etc.).
 
 **Fluxo completo de renovacao:**
 
