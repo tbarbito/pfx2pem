@@ -250,6 +250,10 @@ certs/
 
 O servidor de producao nao precisa de Python, pip ou acesso a repositorios externos.
 
+> **Recomendacao:** antes de copiar os novos `.pem`, faca backup da pasta `certs/` do TSS (ou ao menos
+> dos arquivos que serao substituidos). Em caso de problema com o novo certificado, o backup permite
+> restaurar o anterior sem interrupcao do servico.
+
 ---
 
 ## Licenca
