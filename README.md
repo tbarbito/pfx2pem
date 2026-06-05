@@ -232,6 +232,26 @@ A conexao com a internet e necessaria apenas no primeiro uso ou quando o certifi
 
 ---
 
+## Uso em servidores sem acesso a internet
+
+O pfx2pem nao precisa ser instalado no servidor do TSS. O fluxo recomendado e:
+
+1. Instale o pfx2pem em qualquer maquina com acesso a internet
+2. Execute a conversao -- os arquivos `.pem` serao gerados localmente
+3. Copie apenas os `.pem` para a pasta `certs/` do TSS no servidor destino
+
+```
+certs/
+  12345678000195_key.pem
+  12345678000195_cert.pem
+  12345678000195_ca.pem
+  12345678000195_all.pem
+```
+
+O servidor de producao nao precisa de Python, pip ou acesso a repositorios externos.
+
+---
+
 ## Licenca
 
 MIT
